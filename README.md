@@ -45,9 +45,36 @@ EVE-Note/
 └── README.md
 ```
 
-## Connecting a real AI later
+## Connecting a real AI
 
-All model calls go through `EveAI` in `ai.js`. Replace the `complete()` function with a network request and keep the same method names (`summarize`, `improve`, `grammar`, `brainstorm`, `expand`, `actions`, `chat`).
+All model calls go through `EveAI` in `ai.js`. The app first tries the serverless proxy and falls back to the built-in mock when the proxy or key is missing — so the prototype always works.
+
+The proxy keeps your key server-side. Two layouts are included:
+
+| Host | Function path | Endpoint |
+| --- | --- | --- |
+| Vercel | `api/eve.js` | `/api/eve` |
+| Netlify | `netlify/functions/eve.js` | `/.netlify/functions/eve` |
+
+### Setup
+
+1. Copy `.env.example` to `.env` and add your key (or set it in the host dashboard):
+
+```bash
+OPENAI_API_KEY=sk-...
+# optional
+OPENAI_MODEL=gpt-4o-mini
+```
+
+2. Run locally with functions enabled:
+
+```bash
+npx vercel dev        # or: npx netlify dev
+```
+
+3. Deploy and set `OPENAI_API_KEY` in the project’s environment variables.
+
+`.env` files are git-ignored, so keys never reach the repo or the browser.
 
 ## Keyboard
 

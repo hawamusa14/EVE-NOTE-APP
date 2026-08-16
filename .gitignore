@@ -2,3 +2,11 @@
 *.log
 .idea/
 .vscode/
+
+# Secrets — never commit API keys
+.env
+.env.*
+!.env.example
+.vercel
+.netlify
+node_modules/

@@ -1,14 +1,34 @@
 /**
  * EveAI — isolated AI service for EVE Note.
- * Swap `complete()` with a real model endpoint later; the rest of the app
- * only talks to the public methods below.
+ * Tries the serverless proxy first (/api/eve on Vercel, /.netlify/functions/eve
+ * on Netlify). If the proxy is missing or the key is not configured, it falls
+ * back to the built-in mock so the prototype always works.
  */
 const EveAI = (() => {
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  const ENDPOINTS = ["/api/eve", "/.netlify/functions/eve"];
+
+  async function callProxy(task, payload) {
+    for (const url of ENDPOINTS) {
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ task, payload })
+        });
+        if (!res.ok) continue;
+        const data = await res.json();
+        if (data && data.html) return data;
+      } catch {
+        /* try next endpoint */
+      }
+    }
+    return null;
+  }
 
   async function complete(task, payload) {
-    // Seam for a live API:
-    // return fetch("/api/eve", { method: "POST", body: JSON.stringify({ task, payload }) })
+    const live = await callProxy(task, payload);
+    if (live) return live;
     await wait(520 + Math.random() * 480);
     return mock(task, payload);
   }
