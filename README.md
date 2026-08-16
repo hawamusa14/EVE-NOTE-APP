@@ -17,6 +17,15 @@ python3 -m http.server 5173
 
 Then visit [http://localhost:5173](http://localhost:5173).
 
+### With live AI (local)
+
+To run the site **and** the OpenAI proxy together (no Node required):
+
+```bash
+cp .env.example .env    # paste your key: OPENAI_API_KEY=sk-...
+python3 server.py       # serves the site and /api/eve on :5173
+```
+
 Chrome, Safari, Firefox, and Edge are supported. Data is stored in the browser with `localStorage`.
 
 ## What’s included
@@ -49,10 +58,11 @@ EVE-Note/
 
 All model calls go through `EveAI` in `ai.js`. The app first tries the serverless proxy and falls back to the built-in mock when the proxy or key is missing — so the prototype always works.
 
-The proxy keeps your key server-side. Two layouts are included:
+The proxy keeps your key server-side. Three layouts are included:
 
 | Host | Function path | Endpoint |
 | --- | --- | --- |
+| Local (Python) | `server.py` | `/api/eve` |
 | Vercel | `api/eve.js` | `/api/eve` |
 | Netlify | `netlify/functions/eve.js` | `/.netlify/functions/eve` |
 
@@ -66,9 +76,11 @@ OPENAI_API_KEY=sk-...
 OPENAI_MODEL=gpt-4o-mini
 ```
 
-2. Run locally with functions enabled:
+2. Run locally — either the Python server (no installs) or a functions runner:
 
 ```bash
+python3 server.py     # serves site + /api/eve
+# or, with Node installed:
 npx vercel dev        # or: npx netlify dev
 ```
 
